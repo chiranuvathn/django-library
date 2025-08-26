@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title}Library{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>{% block header %}My Library{% endblock %}</h1>
+        <hr>
+    </header>
+
+    <main>
+        {% block content %}
+            Welcome to the Library!
+        {% endblock %}
+    </main>
+
+    <footer>
+        <hr>
+        <p>{% block footer %}For Learning Purposes Only.{% endblock %}</p>
+    </footer>
+</body>
+</html>
