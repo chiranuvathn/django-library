@@ -1,0 +1,15 @@
+{% extends 'pages/base.html' %}
+
+{% block header %}Book Details{% endblock %}
+
+{% block content %}
+<ul>
+    {% for book in books%}
+        <li><strong>{{ book.title }}</strong> by {{ book.author }} 
+            (Published: {{ book.published_date }})
+        </li>
+    {% empty %}
+        <p>No Books Available</p>
+    {% endfor %}
+</ul>
+{% endblock %}
