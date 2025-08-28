@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from .models import Book
 from .forms import BookForm
@@ -13,9 +13,16 @@ def book_list(request):
     
     return render(request, 'pages/book_list.html', context)
 
-# to add 'post' request handler and save form inputs to database
 def add_book(request):
     form = BookForm()
+
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    
     context = {'form': form}
 
     return render(request, 'pages/book_form.html', context)
