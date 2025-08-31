@@ -5,7 +5,14 @@
 {% block content %}
 <ul>
     {% for book in books%}
-        <li><strong>{{ book.title }}</strong> by {{ book.author }} 
+        <li>
+            <strong>
+                <!-- refer to 'book' object in 'book_detail' view-->
+                <a href="{% url 'book_detail' book.id %}">
+                    {{ book.title }}
+                </a>
+            </strong> 
+            by {{ book.author }} 
             (Published: {{ book.published_date }})
         </li>
     {% empty %}
