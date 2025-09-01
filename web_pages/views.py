@@ -23,12 +23,40 @@ def add_book(request):
     form = BookForm()
 
     if request.method == 'POST':
+        # package form inputs and update 'Book' model
         form = BookForm(request.POST)
 
         if form.is_valid():
             form.save()
             return redirect('book_list')
     
-    context = {'form': form}
+    context = {
+        'form': form,
+        'title': 'Add A New Book',
+        'button': 'Submit'
+    }
+
+    return render(request, 'pages/book_form.html', context)
+
+def edit_book(request, id):
+    book = get_object_or_404(Book, pk=id)
+    
+    if request.method == 'POST':
+        # package form inputs and update 'Book' model by id
+        form = BookForm(request.POST, instance=book)
+
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    
+    else:
+        # populate form with 'Book' model by id
+        form = BookForm(instance=book)
+    
+    context = {
+        'form': form,
+        'title': 'Editing - ' + book.title,
+        'button': 'Save Changes'
+    }
 
     return render(request, 'pages/book_form.html', context)

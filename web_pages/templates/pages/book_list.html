@@ -14,6 +14,8 @@
             </strong> 
             by {{ book.author }} 
             (Published: {{ book.published_date }})
+            <!-- refer to 'book' object in 'edit_book' view-->
+            <a href="{% url 'edit_book' book.id %}">Edit</a>
         </li>
     {% empty %}
         <p>No Books Available</p>
