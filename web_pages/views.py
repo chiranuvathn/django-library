@@ -60,3 +60,8 @@ def edit_book(request, id):
     }
 
     return render(request, 'pages/book_form.html', context)
+
+def delete_book(request, id):
+    book = get_object_or_404(Book, pk=id)
+    book.delete()
+    return redirect('book_list')

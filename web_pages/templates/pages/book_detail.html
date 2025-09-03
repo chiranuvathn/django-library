@@ -8,4 +8,6 @@
     <h3>By {{ book.author }}</h3>
 
     <p>Published on <strong>{{ book.published_date }}</strong></p>
+
+    <button type="button"><a href="{% url 'book_list' %}">Back to List</a></button>
 {% endblock %}
