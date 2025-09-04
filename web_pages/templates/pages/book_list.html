@@ -3,25 +3,35 @@
 {% block header %}Book List{% endblock %}
 
 {% block content %}
-<ul>
-    {% for book in books%}
-        <li>
-            <strong>
-                <!-- refer to 'book' object in 'book_detail' view-->
-                <a href="{% url 'book_detail' book.id %}">
-                    {{ book.title }}
-                </a>
-            </strong> 
-            by {{ book.author }} 
-            (Published: {{ book.published_date }})
-            <!-- refer to 'book' object in 'edit_book' view-->
-            <button type="button"><a href="{% url 'edit_book' book.id %}">Edit</a></button>
-            <button type="button"><a href="{% url 'delete_book' book.id %}">Delete</a></button>
-        </li>
-    {% empty %}
-        <p>No Books Available</p>
-    {% endfor %}
-</ul>
+<div class="content-search-bar">
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" placeholder="Title" name="book-title">
+        <button type="submit">Search</button>
+    </form>
+</div>
 
-<button type="button"><a href="{% url 'add_book' %}">Add A New Book</a></button>
+<div class="content-book-list">
+    <ul>
+        {% for book in books%}
+            <li>
+                <strong>
+                    <!-- refer to 'book' object in 'book_detail' view-->
+                    <a href="{% url 'book_detail' book.id %}">
+                        {{ book.title }}
+                    </a>
+                </strong> 
+                by {{ book.author }} 
+                (Published: {{ book.published_date }})
+                <!-- refer to 'book' object in 'edit_book' view-->
+                <button type="button"><a href="{% url 'edit_book' book.id %}">Edit</a></button>
+                <button type="button"><a href="{% url 'delete_book' book.id %}">Delete</a></button>
+            </li>
+        {% empty %}
+            <p>No Books Available</p>
+        {% endfor %}
+    </ul>
+
+    <button type="button"><a href="{% url 'add_book' %}">Add A New Book</a></button>
+</div>
 {% endblock %}
