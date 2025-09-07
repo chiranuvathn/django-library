@@ -8,7 +8,14 @@ def homepage(request):
     return HttpResponse('Welcome to the Library!')
 
 def book_list(request):
-    books = Book.objects.all()
+    title = request.GET.get('title')
+
+    if title:
+        books = Book.objects.filter(title__icontains=title)
+    
+    else:
+        books = Book.objects.all()
+    
     context = {'books': books}
     
     return render(request, 'pages/book_list.html', context)
