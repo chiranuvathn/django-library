@@ -9,12 +9,14 @@ def homepage(request):
 
 def book_list(request):
     title = request.GET.get('title')
+    sort_by = request.GET.get('sort_option', 'title')
+
+    books = Book.objects.all()
 
     if title:
         books = Book.objects.filter(title__icontains=title)
-    
-    else:
-        books = Book.objects.all()
+
+    books = books.order_by(sort_by)
     
     context = {'books': books}
     
