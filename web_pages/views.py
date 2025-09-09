@@ -9,12 +9,17 @@ def homepage(request):
 
 def book_list(request):
     title = request.GET.get('title')
-    sort_by = request.GET.get('sort_option', 'title')
 
     books = Book.objects.all()
 
     if title:
-        books = Book.objects.filter(title__icontains=title)
+        books = books.filter(title__icontains=title)
+
+    valid_sort_options = ['title', 'author', 'published_date']
+    sort_by = request.GET.get('sort_option')
+
+    if sort_by not in valid_sort_options:
+        sort_by = 'title'
 
     books = books.order_by(sort_by)
     
