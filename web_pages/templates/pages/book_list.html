@@ -3,7 +3,8 @@
 {% block header %}Book List{% endblock %}
 
 {% block content %}
-<div class="content-search-bar">
+<div class="content-search-bar"> 
+    <button type="button"><a href="{% url 'add_book' %}">Add A New Book</a></button>
     <form method="get">
         {% csrf_token %}
         <input type="text" placeholder="Title" name="title">
@@ -20,7 +21,7 @@
 
 <div class="content-book-list">
     <ul>
-        {% for book in books%}
+        {% for book in page_obj%}
             <li>
                 <strong>
                     <!-- refer to 'book' object in 'book_detail' view-->
@@ -38,7 +39,21 @@
             <p>No Books Available</p>
         {% endfor %}
     </ul>
+</div>
 
-    <button type="button"><a href="{% url 'add_book' %}">Add A New Book</a></button>
+<div class="paginaiton">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+          Page {{ page_obj.number }} of {{  page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </span>
 </div>
 {% endblock %}

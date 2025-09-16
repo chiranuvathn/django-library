@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -8,13 +9,15 @@ def homepage(request):
     return HttpResponse('Welcome to the Library!')
 
 def book_list(request):
-    title = request.GET.get('title')
-
     books = Book.objects.all()
+
+    # filtering
+    title = request.GET.get('title')
 
     if title:
         books = books.filter(title__icontains=title)
 
+    # sorting
     valid_sort_options = ['title', 'author', 'published_date']
     sort_by = request.GET.get('sort_option')
 
@@ -22,8 +25,14 @@ def book_list(request):
         sort_by = 'title'
 
     books = books.order_by(sort_by)
+
+    # paginator
+    paginator = Paginator(books, 2)
     
-    context = {'books': books}
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'page_obj': page_obj}
     
     return render(request, 'pages/book_list.html', context)
 
