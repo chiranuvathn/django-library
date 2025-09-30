@@ -63,6 +63,7 @@ def add_book(request):
 
     return render(request, 'pages/book_form.html', context)
 
+@login_required
 def edit_book(request, id):
     book = get_object_or_404(Book, pk=id)
     
@@ -86,6 +87,7 @@ def edit_book(request, id):
 
     return render(request, 'pages/book_form.html', context)
 
+@login_required
 def delete_book(request, id):
     book = get_object_or_404(Book, pk=id)
     book.delete()
