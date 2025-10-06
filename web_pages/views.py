@@ -52,7 +52,9 @@ def add_book(request):
         form = BookForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            book = form.save(commit=False)
+            book.user = request.user
+            book.save()
             return redirect('book_list')
     
     context = {
