@@ -7,6 +7,14 @@
 </head>
 <body>
     <header>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="message-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
         <h1>{% block header %}My Library{% endblock %}</h1>
         <hr>
     </header>

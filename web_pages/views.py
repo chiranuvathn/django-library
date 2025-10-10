@@ -1,6 +1,8 @@
 from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .models import Book
@@ -55,6 +57,8 @@ def add_book(request):
             book = form.save(commit=False)
             book.user = request.user
             book.save()
+
+            messages.success(request,"Your book was added successfully!")
             return redirect('book_list')
     
     context = {
@@ -78,6 +82,8 @@ def edit_book(request, id):
 
         if form.is_valid():
             form.save()
+            
+            messages.success(request,"Your book was edited successfully!")
             return redirect('book_list')
     
     else:
@@ -99,4 +105,6 @@ def delete_book(request, id):
     except Http404:
         return HttpResponseForbidden("Access Denied. You do not have permission to delete this book.")
     book.delete()
+    
+    messages.success(request,"Your book has been deleted!")
     return redirect('book_list')
