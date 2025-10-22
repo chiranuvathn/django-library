@@ -130,3 +130,9 @@ LOGIN_REDIRECT_URL = 'home'
 
 # Logout redirect path
 LOGOUT_REDIRECT_URL = 'home'
+
+# User Uploaded File Storage Path
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# User Uploaded File Public Base URL
+MEDIA_URL = '/media/'
