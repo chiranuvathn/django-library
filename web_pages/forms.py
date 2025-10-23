@@ -7,5 +7,6 @@ class BookForm(ModelForm):
         fields = [
             "title",
             "author",
-            "published_date"
+            "published_date",
+            "cover"
         ]
