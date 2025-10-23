@@ -51,7 +51,7 @@ def add_book(request):
 
     if request.method == 'POST':
         # package form inputs and update 'Book' model
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
 
         if form.is_valid():
             book = form.save(commit=False)
@@ -78,7 +78,7 @@ def edit_book(request, id):
     
     if request.method == 'POST':
         # package form inputs and update 'Book' model by id
-        form = BookForm(request.POST, instance=book)
+        form = BookForm(request.POST, request.FILES, instance=book)
 
         if form.is_valid():
             form.save()
