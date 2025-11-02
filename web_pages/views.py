@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from django.views.generic import DetailView
+
 from .models import Book
 from .forms import BookForm
 
@@ -38,6 +40,12 @@ def book_list(request):
     context = {'page_obj': page_obj}
     
     return render(request, 'pages/book_list.html', context)
+
+class BookDetailView(DetailView):
+    model = Book
+    pk_url_kwarg = 'id' # change from default 'pk'
+    template_name = 'pages/book_detail.html'
+
 
 def book_detail(request, id):
     book = get_object_or_404(Book, pk=id)
