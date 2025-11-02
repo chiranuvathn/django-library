@@ -5,13 +5,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from django.views.generic import DetailView
+from django.views.generic import View, ListView, DetailView
 
 from .models import Book
 from .forms import BookForm
 
 def homepage(request):
     return HttpResponse('Welcome to the Library!')
+
+class BaseBookView(View):
+    model = Book
+    pk_url_kwarg = 'id' # change from default 'pk'
+    form_class = BookForm
+
+# class BookListView(BaseBookView, ListView):
+#     pass
 
 def book_list(request):
     books = Book.objects.all()
@@ -41,17 +49,14 @@ def book_list(request):
     
     return render(request, 'pages/book_list.html', context)
 
-class BookDetailView(DetailView):
-    model = Book
-    pk_url_kwarg = 'id' # change from default 'pk'
+class BookDetailView(BaseBookView, DetailView):
     template_name = 'pages/book_detail.html'
 
+# def book_detail(request, id):
+#     book = get_object_or_404(Book, pk=id)
+#     context = {'book': book}
 
-def book_detail(request, id):
-    book = get_object_or_404(Book, pk=id)
-    context = {'book': book}
-
-    return render(request, 'pages/book_detail.html', context)
+#     return render(request, 'pages/book_detail.html', context)
 
 @login_required
 def add_book(request):
