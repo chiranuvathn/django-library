@@ -18,36 +18,57 @@ class BaseBookView(View):
     pk_url_kwarg = 'id' # change from default 'pk'
     form_class = BookForm
 
-# class BookListView(BaseBookView, ListView):
-#     pass
-
-def book_list(request):
-    books = Book.objects.all()
+class BookListView(BaseBookView, ListView):
+    template_name = 'pages/book_list.html'
+    paginate_by = 3 # paginator
 
     # filtering
-    title = request.GET.get('title')
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        title = self.request.GET.get('title')
 
-    if title:
-        books = books.filter(title__icontains=title)
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+        
+        return queryset
 
     # sorting
-    valid_sort_options = ['title', 'author', 'published_date']
-    sort_by = request.GET.get('sort_option')
+    def get_ordering(self):
+        order_by = self.request.GET.get('sort_option')
+        valid_sort_options = ['title', 'author', 'published_date']
 
-    if sort_by not in valid_sort_options:
-        sort_by = 'title'
+        if order_by not in valid_sort_options:
+            order_by = 'title'
 
-    books = books.order_by(sort_by)
+        return order_by
 
-    # paginator
-    paginator = Paginator(books, 2)
+# def book_list(request):
+#     books = Book.objects.all()
+
+#     # filtering
+#     title = request.GET.get('title')
+
+#     if title:
+#         books = books.filter(title__icontains=title)
+
+#     # sorting
+#     valid_sort_options = ['title', 'author', 'published_date']
+#     sort_by = request.GET.get('sort_option')
+
+#     if sort_by not in valid_sort_options:
+#         sort_by = 'title'
+
+#     books = books.order_by(sort_by)
+
+#     # paginator
+#     paginator = Paginator(books, 2)
     
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
 
-    context = {'page_obj': page_obj}
+#     context = {'page_obj': page_obj}
     
-    return render(request, 'pages/book_list.html', context)
+#     return render(request, 'pages/book_list.html', context)
 
 class BookDetailView(BaseBookView, DetailView):
     template_name = 'pages/book_detail.html'
