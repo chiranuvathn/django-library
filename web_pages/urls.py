@@ -5,13 +5,13 @@ from django.urls import path
 from . import views
 
 # need to be explicit to use CBVs
-from .views import BookListView, BookDetailView
+from .views import BookListView, BookAddView, BookDetailView
 
 urlpatterns = [
     # path('', views.homepage, name='home'),
     path('', BookListView.as_view(), name='book_list'),
     path('books/<int:id>/', BookDetailView.as_view(), name='book_detail'),
-    path('books/add/', views.add_book, name='add_book'),
+    path('books/add/', BookAddView.as_view(), name='add_book'),
     path('books/<int:id>/edit/', views.edit_book, name='edit_book'),
     path('books/<int:id>/delete', views.delete_book, name='delete_book'),
 ]
