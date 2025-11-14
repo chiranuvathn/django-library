@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 
-from django.views.generic import View, ListView, DetailView, CreateView
+from django.views.generic import View, ListView, DetailView, CreateView, UpdateView
 
 from .models import Book
 from .forms import BookForm
@@ -17,6 +17,8 @@ def homepage(request):
 
 class BaseBookView(View):
     model = Book
+    form_class = BookForm
+    success_url = '/books/'
     pk_url_kwarg = 'id' # change from default 'pk'
 
 class BookListView(BaseBookView, ListView):
@@ -82,9 +84,7 @@ class BookDetailView(BaseBookView, DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class BookAddView(BaseBookView, SuccessMessageMixin, CreateView):
-    form_class = BookForm
-    success_url = '/books/'
-    success_message = "Your book was added successfully!" 
+    success_message = "Your book was added successfully!"
     template_name = 'pages/book_form.html'
 
     def get_context_data(self, **kwargs):
@@ -126,34 +126,59 @@ class BookAddView(BaseBookView, SuccessMessageMixin, CreateView):
 #
 #    return render(request, 'pages/book_form.html', context)
 
-@login_required
-def edit_book(request, id):
-    try:
-        book = get_object_or_404(Book, pk=id, user=request.user)
-    except Http404:
-        return HttpResponseForbidden("Access Denied. You do not have permission to edit this book.")
-    
-    if request.method == 'POST':
-        # package form inputs and update 'Book' model by id
-        form = BookForm(request.POST, request.FILES, instance=book)
+@method_decorator(login_required, name='dispatch')
+class BookEditView(BaseBookView, SuccessMessageMixin, UpdateView):
+    success_message = "Your book was edited successfully!"
+    template_name = 'pages/book_form.html'
 
-        if form.is_valid():
-            form.save()
-            
-            messages.success(request,"Your book was edited successfully!")
-            return redirect('book_list')
-    
-    else:
-        # populate form with 'Book' model by id
-        form = BookForm(instance=book)
-    
-    context = {
-        'form': form,
-        'title': 'Editing - ' + book.title,
-        'button': 'Save Changes'
-    }
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except Http404:
+            return HttpResponseForbidden("Access Denied. You do not have permission to edit this book.")
 
-    return render(request, 'pages/book_form.html', context)
+    def get_object(self, queryset=None):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        queryset = get_object_or_404(self.model, pk=id, user=self.request.user)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = 'Editing - ' + self.object.title
+        context['button'] = 'Save Changes'
+
+        return context
+
+#@login_required
+#def edit_book(request, id):
+#    try:
+#        book = get_object_or_404(Book, pk=id, user=request.user)
+#    except Http404:
+#        return HttpResponseForbidden("Access Denied. You do not have permission to edit this book.")
+#    
+#    if request.method == 'POST':
+#        # package form inputs and update 'Book' model by id
+#        form = BookForm(request.POST, request.FILES, instance=book)
+#
+#        if form.is_valid():
+#            form.save()
+#            
+#            messages.success(request,"Your book was edited successfully!")
+#            return redirect('book_list')
+#    
+#    else:
+#        # populate form with 'Book' model by id
+#        form = BookForm(instance=book)
+#    
+#    context = {
+#        'form': form,
+#        'title': 'Editing - ' + book.title,
+#        'button': 'Save Changes'
+#    }
+#
+#    return render(request, 'pages/book_form.html', context)
 
 @login_required
 def delete_book(request, id):
