@@ -5,7 +5,7 @@ from django.urls import path
 from . import views
 
 # need to be explicit to use CBVs
-from .views import BookListView, BookAddView, BookEditView, BookDetailView
+from .views import BookListView, BookDetailView, BookAddView, BookEditView, BookDetailView, BookDeleteView
 
 urlpatterns = [
     # path('', views.homepage, name='home'),
@@ -13,7 +13,7 @@ urlpatterns = [
     path('books/<int:id>/', BookDetailView.as_view(), name='book_detail'),
     path('books/add/', BookAddView.as_view(), name='add_book'),
     path('books/<int:id>/edit/', BookEditView.as_view(), name='edit_book'),
-    path('books/<int:id>/delete', views.delete_book, name='delete_book'),
+    path('books/<int:id>/delete', BookDeleteView.as_view(), name='delete_book'),
 ]
 
 # for serving media files during Development

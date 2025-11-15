@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect,Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.decorators import method_decorator
 
@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 
-from django.views.generic import View, ListView, DetailView, CreateView, UpdateView
+from django.views.generic import View, ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .models import Book
 from .forms import BookForm
@@ -180,13 +180,41 @@ class BookEditView(BaseBookView, SuccessMessageMixin, UpdateView):
 #
 #    return render(request, 'pages/book_form.html', context)
 
-@login_required
-def delete_book(request, id):
-    try:
-        book = get_object_or_404(Book, pk=id, user=request.user)
-    except Http404:
-        return HttpResponseForbidden("Access Denied. You do not have permission to delete this book.")
-    book.delete()
-    
-    messages.success(request,"Your book has been deleted!")
-    return redirect('book_list')
+@method_decorator(login_required, name='dispatch')
+class BookDeleteView(BaseBookView, SuccessMessageMixin, DeleteView):
+    success_message = "Your book has been deleted!"
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except Http404:
+            return HttpResponseForbidden("Access Denied. You do not have permission to delete this book.")
+
+    def get_object(self, queryset=None):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        queryset = get_object_or_404(self.model, pk=id, user=self.request.user)
+
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+
+        if self.success_message:
+            messages.success(self.request, self.success_message)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+#@login_required
+#def delete_book(request, id):
+#    try:
+#        book = get_object_or_404(Book, pk=id, user=request.user)
+#    except Http404:
+#        return HttpResponseForbidden("Access Denied. You do not have permission to delete this book.")
+#    book.delete()
+#    
+#    messages.success(request,"Your book has been deleted!")
+#    return redirect('book_list')
