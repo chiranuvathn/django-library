@@ -1,7 +1,8 @@
-from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect,Http404, HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.decorators import method_decorator
+from django.core.paginator import Paginator
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,35 +16,34 @@ from .forms import BookForm
 def homepage(request):
     return HttpResponse('Welcome to the Library!')
 
-class BaseBookView(View):
+class BaseBookView:
     model = Book
     form_class = BookForm
-    success_url = '/books/'
+    success_url = reverse_lazy('book_list')
     pk_url_kwarg = 'id' # change from default 'pk'
 
 class BookListView(BaseBookView, ListView):
     template_name = 'pages/book_list.html'
     paginate_by = 3 # paginator
 
-    # filtering
     def get_queryset(self):
         queryset = super().get_queryset()
+        
+        # filtering
         title = self.request.GET.get('title')
-
         if title:
             queryset = queryset.filter(title__icontains=title)
-        
-        return queryset
 
-    # sorting
-    def get_ordering(self):
-        order_by = self.request.GET.get('sort_option')
+        # sorting
         valid_sort_options = ['title', 'author', 'published_date']
+        sort_by = self.request.GET.get('sort_option')
 
-        if order_by not in valid_sort_options:
-            order_by = 'title'
+        if sort_by not in valid_sort_options:
+            sort_by = 'title'
 
-        return order_by
+        queryset = queryset.order_by(sort_by)
+
+        return queryset
 
 # def book_list(request):
 #     books = Book.objects.all()
@@ -196,6 +196,7 @@ class BookDeleteView(BaseBookView, SuccessMessageMixin, DeleteView):
 
         return queryset
 
+    # pass get() to post() so deletion happens immediately without confirmation page
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
