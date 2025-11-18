@@ -34,3 +34,14 @@ class BookForm(ModelForm):
 
         return published_date
 
+    # cross-field validation of title and author
+    def clean(self):
+        cleaned_data = super().clean()
+        title = cleaned_data.get("title")
+        author = cleaned_data.get("author")
+
+        if "draft" in title and author == "Unknown":
+            raise forms.ValidationError("Author cannot be 'Unknown' if Title is 'draft'")
+
+        return cleaned_data
+
