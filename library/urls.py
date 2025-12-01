@@ -26,4 +26,5 @@ urlpatterns = [
     path('books/', include('web_pages.urls')),
     path('accounts/signup/', views.sign_up, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('api/', include('api.urls')),
 ]
